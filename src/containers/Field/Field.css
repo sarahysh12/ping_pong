@@ -1,0 +1,11 @@
+.PingPong {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+ 
+}
+.PingPong h1 {
+    font-size: 130px;
+    color: white;
+}

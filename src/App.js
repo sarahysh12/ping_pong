@@ -1,0 +1,15 @@
+import React, { Component } from 'react';
+import Field from './containers/Field/Field';
+import './App.css';
+
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <Field/>
+      </div>
+    );
+  }
+}
+
+export default App;
