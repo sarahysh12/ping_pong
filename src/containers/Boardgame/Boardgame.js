@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import './Boardgame.css';
 import Sketch from 'react-p5';
-import ballIncomingSound from '../../sounds/ball-incoming.mp3';
-import ballOutgoingSound from '../../sounds/ball-outgoing.mp3';
+// import ballIncomingSound from '../../sounds/ball-incoming.mp3';
+// import ballOutgoingSound from '../../sounds/ball-outgoing.mp3';
 import gameOverSound from '../../sounds/game-over.mp3';
 
 class BoardGame extends Component {
@@ -67,6 +67,8 @@ class BoardGame extends Component {
         if(!this.permissionGranted) return;
         // rotatinX, rotationY
         p5.background(0);
+
+
         const dx = p5.constrain(p5.rotationY, -3, 3);
         const dy = p5.constrain(p5.rotationX, -3, 3);
         this.cx += dx*5;
@@ -75,7 +77,7 @@ class BoardGame extends Component {
         this.cy = p5.constrain(this.cy, 0, p5.height);
         p5.noStroke();
         // TODO And not catch by robot
-        if(this.cy == 0) {
+        if(this.cy === 0) {
             const currentScore = this.state.score;
             this.setState({score: currentScore+1});
             // TODO increment just by one
