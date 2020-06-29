@@ -105,7 +105,8 @@ class Table extends Component {
 
         p5.textSize(45);
         p5.text('Game Over', p5.width/2-100, p5.height/2-200);
-        p5.text(`HighScore: ${localStorage.getItem('highScore')}` , p5.width/2-100, (p5.height/2)+100);
+        // p5.text(`HighScore: ${localStorage.getItem('highScore')}` , p5.width/2-100, (p5.height/2)+100);
+        p5.text(`HighScore: ${this.state.highScore}` , p5.width/2-100, (p5.height/2)+100);
         let button = p5.createButton('Play Again');
         button.position(p5.width/2-50, (p5.height/2)+250);
         button.size(100,40);
