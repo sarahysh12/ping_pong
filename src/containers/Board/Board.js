@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import './Table.css';
+import './Board.css';
 import Sketch from 'react-p5';
 import ballIncomingSound from '../../sounds/ball-incoming.mp3';
 import ballOutgoingSound from '../../sounds/ball-outgoing.mp3';
@@ -14,7 +14,7 @@ class Table extends Component {
         hitCount: 0,
         highScore: 0,
         lastHitTime: Date,
-        isGameStarted: false
+        hasGameStarted: true
     }
 
     permissionGranted = false;
@@ -47,6 +47,7 @@ class Table extends Component {
     grantPermission = (p5) => {
         if(typeof(DeviceOrientationEvent) !== 'undefined' && typeof(DeviceOrientationEvent.requestPermission) === 'function') {
             this.setState({isMobile: true});
+            this.setState({hasGameStarted: false});
             // ios 13 device
             DeviceOrientationEvent.requestPermission()
             .catch((error) => {
@@ -63,7 +64,7 @@ class Table extends Component {
                 button.style('font-size', '24px');
                 button.center();
                 button.mousePressed(() => {
-                    this.setState({isGameStarted: true});
+                    this.setState({hasGameStarted: true});
                     button.remove();
                     this.enableSound();
                 });
@@ -87,7 +88,7 @@ class Table extends Component {
                     }
                 })
                 .catch(console.error);
-                this.setState({isGameStarted: true});
+                this.setState({hasGameStarted: true});
                 button.remove();
                 this.enableSound();
         }
@@ -132,7 +133,7 @@ class Table extends Component {
     draw = p5 => {
         if(this.state.isMobile && !this.permissionGranted) return;
         p5.background('#3d86d4');
-        if(this.state.isGameStarted) {
+        if(this.state.hasGameStarted) {
             p5.textSize(45);
             p5.text(`Score: ${this.state.score}` , p5.width/2-100, (p5.height/2)-50);
         }
@@ -214,7 +215,7 @@ class Table extends Component {
         }
         
         /* First serve */
-        if(this.state.isGameStarted && this.state.isServe && p5.pAccelerationZ - p5.accelerationZ > 2) {
+        if(this.state.hasGameStarted && this.state.isServe && p5.pAccelerationZ - p5.accelerationZ > 2) {
             this.ballVelocity.x = Math.tanh(p5.rotationX - p5.pRotationX);
             this.ballVelocity.y = -3;
             this.setState({isServe: false});
@@ -229,7 +230,7 @@ class Table extends Component {
 
     render() {
       return (
-        <div className="Game">
+        <div className="Board">
             <audio ref={this.inRef} src={ballIncomingSound} />
             <audio ref={this.outRef} src={ballOutgoingSound} />
             <audio ref={this.overRef} src={gameOverSound} />
