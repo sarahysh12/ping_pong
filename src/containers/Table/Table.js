@@ -30,7 +30,19 @@ class Table extends Component {
     setup = (p5) => {
         this.resetGame(p5, null)();
         this.grantPermission(p5);
+        p5.frameRate(120);
     };
+
+
+    enableSound = () => {
+        this.outRef.current.play();
+        this.outRef.current.pause();
+        this.inRef.current.play();
+        this.inRef.current.pause();
+        this.overRef.current.play();
+        this.overRef.current.pause();
+    }
+
 
     grantPermission = (p5) => {
         if(typeof(DeviceOrientationEvent) !== 'undefined' && typeof(DeviceOrientationEvent.requestPermission) === 'function') {
@@ -47,20 +59,13 @@ class Table extends Component {
             })
             .then(() => {
                 // on any subsequent visits
-                p5.textSize(50);
-                p5.text('Score: 0' , p5.width/2, (p5.height/2)-50);
                 let button = p5.createButton('Let\'s Play');
                 button.style('font-size', '24px');
-                button.position(p5.width/2-75, (p5.height/2)+50);
+                button.center();
                 button.mousePressed(() => {
                     this.setState({isGameStarted: true});
                     button.remove();
-                    this.outRef.current.play();
-                    this.outRef.current.pause();
-                    this.inRef.current.play();
-                    this.inRef.current.pause();
-                    this.overRef.current.play();
-                    this.overRef.current.pause();
+                    this.enableSound();
                 });
                 this.permissionGranted =  true;
             })
@@ -82,7 +87,9 @@ class Table extends Component {
                     }
                 })
                 .catch(console.error);
+                this.setState({isGameStarted: true});
                 button.remove();
+                this.enableSound();
         }
     }
 
@@ -90,13 +97,14 @@ class Table extends Component {
         this.overRef.current.play();
 
         if (this.state.score > this.state.highScore) {
-            this.setState({highScore: this.state.score})
+            this.setState({highScore: this.state.score});
+            // second solution
+            localStorage.setItem('highScore', this.state.score);
         }
 
         p5.textSize(45);
         p5.text('Game Over', p5.width/2-100, p5.height/2-200);
-        p5.text(`Score: ${this.state.score}` , p5.width/2-100, (p5.height/2)-50);
-        p5.text(`HighScore: ${this.state.highScore}` , p5.width/2-100, (p5.height/2)+100);
+        p5.text(`HighScore: ${localStorage.getItem('highScore')}` , p5.width/2-100, (p5.height/2)+100);
         let button = p5.createButton('Play Again');
         button.position(p5.width/2-50, (p5.height/2)+250);
         button.size(100,40);
@@ -122,8 +130,12 @@ class Table extends Component {
     }
 
     draw = p5 => {
-        // if(!this.permissionGranted) return;
-        p5.background('#3d86d4')
+        if(this.state.isMobile && !this.permissionGranted) return;
+        p5.background('#3d86d4');
+        if(this.state.isGameStarted) {
+            p5.textSize(45);
+            p5.text(`Score: ${this.state.score}` , p5.width/2-100, (p5.height/2)-50);
+        }
 
         let playerColor = p5.color('#3718b5');
         p5.fill(playerColor);
@@ -140,7 +152,6 @@ class Table extends Component {
         p5.fill(ballColor);
         p5.ellipse(this.ball.x, this.ball.y, 30);
         p5.textSize(20);
-        // p5.text(this.state.score, p5.width/2, 100);
 
         /* Collosion with paddle */
         if(p5.height - this.ball.y <= 20 && p5.height - this.ball.y >= 0) { 
@@ -203,7 +214,7 @@ class Table extends Component {
         }
         
         /* First serve */
-        if(this.state.isServe && p5.pAccelerationZ - p5.accelerationZ > 2) {
+        if(this.state.isGameStarted && this.state.isServe && p5.pAccelerationZ - p5.accelerationZ > 2) {
             this.ballVelocity.x = Math.tanh(p5.rotationX - p5.pRotationX);
             this.ballVelocity.y = -3;
             this.setState({isServe: false});
@@ -222,7 +233,6 @@ class Table extends Component {
             <audio ref={this.inRef} src={ballIncomingSound} />
             <audio ref={this.outRef} src={ballOutgoingSound} />
             <audio ref={this.overRef} src={gameOverSound} />
-            {/* <p>{this.state.deviceRotationY} - {this.state.newY}</p> */}
             <Sketch setup={this.setup} draw={this.draw} />
         </div>
       );
